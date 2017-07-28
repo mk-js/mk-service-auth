@@ -1,0 +1,22 @@
+{
+  "name": "mk-service-auth",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ziaochina/mk-service-auth.git"
+  },
+  "author": "lsg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ziaochina/mk-service-auth/issues"
+  },
+  "homepage": "https://github.com/ziaochina/mk-service-auth#readme",
+  "dependencies": {
+    "jsonwebtoken": "^7.4.1"
+  }
+}
