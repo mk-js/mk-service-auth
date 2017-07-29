@@ -1,14 +1,14 @@
 
 function config(options) {
     Object.assign(current, options)
-    current.secret = new Buffer(options.key , 'base64');
+    current.secret = new Buffer(options.key , "base64");
     current.excludeUrls = {};
     current.exclude.forEach(i => current.excludeUrls[i] = true)
     return current;
 }
 
 var current = {
-    key: 'token/key',
+    key: "token/key",
     tokenKeys: null,
     exclude: [], 
     secret: null,

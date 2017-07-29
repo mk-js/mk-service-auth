@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const config = require('./config').current;
+const jwt = require("jsonwebtoken");
+const config = require("./config").current;
 
 const init = () => {
     if (!config.server) return;
@@ -27,8 +27,8 @@ const interceptor = (ctx) => {
         if (excludeUrls["*"] || excludeUrls[ctx.apiUrl]) return true;
 
         ctx.error({
-            code: '402',
-            message: '未登录'
+            code: "402",
+            message: "未登录"
         });
         return false;
     }
@@ -46,14 +46,14 @@ function encodeToken(obj) {
     }
     let sub = JSON.stringify(arr);
     let exp = Math.floor(Date.now() / 1000) + expire;
-    let str = jwt.sign({ sub, exp }, secret, { algorithm: 'HS512' });
+    let str = jwt.sign({ sub, exp }, secret, { algorithm: "HS512" });
     return str;
 }
 function decodeToken(str) {
     if (!str) throw ({ code: 10, message: "empty token" });
     let { secret, tokenKeys } = config;
 
-    let json = jwt.verify(str, secret, { algorithms: ['HS512'] });
+    let json = jwt.verify(str, secret, { algorithms: ["HS512"] });
     let obj = JSON.parse(json.sub)
     Array.isArray(obj) && Array.isArray(tokenKeys) && tokenKeys.forEach((k, i) => obj[k] = obj[i])
     return obj;
