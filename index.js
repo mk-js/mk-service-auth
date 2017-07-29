@@ -7,6 +7,9 @@ module.exports = {
     version: "",
     description: "",
     author: "lsg",
-    config,
+    config: (options) => {
+        config(options);
+        api.init();
+    },
     api,
 }
