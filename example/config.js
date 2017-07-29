@@ -18,7 +18,7 @@ var current = config.current = {
 
     },
     configs: {
-        auth: {
+        "mk-service-auth": {
             key: "privateKeys",
             tokenKeys: ["userId", "orgId", "versionId"],
             exclude: ["/v1/user/login", "/v1/user/create", "/v1/user/ping"],
