@@ -1,5 +1,5 @@
-const config = require('./config')
-const api = require('./api')
+const config = require("./config")
+const api = require("./api")
 
 module.exports = {
     name: "user",
@@ -7,5 +7,5 @@ module.exports = {
     description: "",
     author: "",
     config,
-    api
+    api,
 }

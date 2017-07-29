@@ -1,10 +1,12 @@
 
-function config(options) { 
-	Object.assign(_options, options)  
-	return _options
-} 
+function config(options) {
+    Object.assign(current, options)
+    return current;
+}
 
-var _options = config.current = { 
-} 
+var current = {
+}
 
-module.exports = config
+module.exports = Object.assign(config, {
+    current,
+})
