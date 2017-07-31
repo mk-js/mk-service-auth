@@ -4,6 +4,7 @@ function config(options) {
     current.secret = new Buffer(options.key , 'base64');
     current.excludeUrls = {};
     current.exclude.forEach(i => current.excludeUrls[i] = true)
+    if(current.init)current.init();
     return current;
 }
 
