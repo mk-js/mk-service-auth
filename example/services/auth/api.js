@@ -61,5 +61,4 @@ function decodeToken(str) {
 
 module.exports = {
     init,
-    interceptor,
 }
