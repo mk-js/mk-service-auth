@@ -1,16 +1,18 @@
 const jwt = require('jsonwebtoken');
-const config = require('./config').current;
+var config
 
-const init = () => {
-    if (!config.server) return;
-    var array = config.server.interceptors || [];
-    if (array.filter(a => a == interceptor) == 0) {
-        array.push(interceptor)
+const api = {
+    _init: (current) => {
+        config = current
+        var array = config.server.interceptors || [];
+        if (array.filter(a => a == interceptor) == 0) {
+            array.push(interceptor)
+        }
+        config.server.interceptors = array
     }
-    config.server.interceptors = array
 }
 
-const interceptor = (ctx) => {
+function interceptor(ctx) {
     //向上下文中增加setToken方法和token对象。
     ctx.setToken = (obj) => {
         ctx.resBody.token = encodeToken(obj);
@@ -49,6 +51,7 @@ function encodeToken(obj) {
     let str = jwt.sign({ sub, exp }, secret, { algorithm: 'HS512' });
     return str;
 }
+
 function decodeToken(str) {
     if (!str) throw ({ code: 10, message: "empty token" });
     let { secret, tokenKeys } = config;
@@ -59,6 +62,4 @@ function decodeToken(str) {
     return obj;
 }
 
-module.exports = {
-    init,
-}
+module.exports = api
