@@ -57,9 +57,13 @@ function decodeToken(str) {
     let { secret, tokenKeys } = config;
 
     let json = jwt.verify(str, secret, { algorithms: ['HS512'] });
-    let obj = JSON.parse(json.sub)
-    Array.isArray(obj) && Array.isArray(tokenKeys) && tokenKeys.forEach((k, i) => obj[k] = obj[i])
-    return obj;
+    let obj = JSON.parse(json.sub) 
+    let token = obj
+    if (Array.isArray(obj) && Array.isArray(tokenKeys)) {
+        token = {}
+        tokenKeys.forEach((k, i) => token[k] = obj[i])
+    }
+    return token;
 }
 
 module.exports = api
