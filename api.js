@@ -25,8 +25,8 @@ function interceptor(ctx) {
     try {
         ctx.token = decodeToken(clientToken);
     } catch (error) {
-        var { excludeUrls } = config;
-        if (excludeUrls["*"] || excludeUrls[ctx.apiUrl]) return true;
+        var { excludeUrls, apiRootUrl } = config;
+        if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
         ctx.error({
             code: '402',
@@ -57,7 +57,7 @@ function decodeToken(str) {
     let { secret, tokenKeys } = config;
 
     let json = jwt.verify(str, secret, { algorithms: ['HS512'] });
-    let obj = JSON.parse(json.sub) 
+    let obj = JSON.parse(json.sub)
     let token = obj
     if (Array.isArray(obj) && Array.isArray(tokenKeys)) {
         token = {}

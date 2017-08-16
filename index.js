@@ -27,7 +27,9 @@ function config(options) {
     Object.assign(current, options)
 
     current.apiRootUrl = options.server.apiRootUrl;
-    current.secret = new Buffer(options.key, "base64");
+    if(options.key){
+        current.secret = new Buffer(options.key, "base64");
+    }
     current.excludeUrls = {};
     current.exclude.forEach(i => current.excludeUrls[current.apiRootUrl + i] = true)
 
