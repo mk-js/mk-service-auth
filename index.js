@@ -27,7 +27,7 @@ function config(options) {
     Object.assign(current, options)
 
     current.apiRootUrl = options.server.apiRootUrl;
-    if(options.key){
+    if (options.key) {
         current.secret = new Buffer(options.key, "base64");
     }
     current.excludeUrls = {};
@@ -37,6 +37,10 @@ function config(options) {
 }
 config.current = {
     apiRootUrl: "",
+    errorObj: {
+        code: '402',
+        message: '未登录'
+    },
     key: "token/key",
     tokenKeys: null,
     exclude: [],

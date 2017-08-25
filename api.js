@@ -28,10 +28,7 @@ function interceptor(ctx) {
         var { excludeUrls, apiRootUrl } = config;
         if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
-        ctx.error({
-            code: '402',
-            message: '未登录'
-        });
+        ctx.error(config.errorObj);
         return false;
     }
     return true;
