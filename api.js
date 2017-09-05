@@ -35,7 +35,7 @@ function interceptor(ctx) {
 }
 
 function encodeToken(obj) {
-    let { secret, expire } = config;
+    let { secret, expire, tokenKeys } = config;
     let arr = [];
 
     if (!Array.isArray(obj) && Array.isArray(tokenKeys)) {
