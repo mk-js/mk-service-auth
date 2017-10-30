@@ -18,8 +18,8 @@ const interceptor = (ctx) => {
     };
     ctx.token = {};
 
-    var clientToken = ctx.request.headers.token || ctx.request.url.query.token;
-
+    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
+    
     try {
         ctx.token = decodeToken(clientToken);
     } catch (error) {
