@@ -1,16 +1,19 @@
 const jwt = require('jsonwebtoken');
-const config = require('./config').current;
+let config
 
-const init = () => {
-    if (!config.server) return;
-    var array = config.server.interceptors || [];
-    if (array.filter(a => a == interceptor) == 0) {
-        array.push(interceptor)
+const api = {
+    _init: (current) => {
+        config = current
+        let array = config.server.interceptors || [];
+        if (array.filter(a => a == interceptor) == 0) {
+            array.push(interceptor)
+        }
+        config.server.interceptors = array
     }
-    config.server.interceptors = array
 }
 
-const interceptor = (ctx) => {
+
+function interceptor(ctx) {
     //向上下文中增加setToken方法和token对象。
     ctx.setToken = (obj) => {
         ctx.resBody.token = encodeToken(obj);
@@ -19,24 +22,21 @@ const interceptor = (ctx) => {
     ctx.token = {};
 
     let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
-    
+
     try {
         ctx.token = decodeToken(clientToken);
     } catch (error) {
-        var { excludeUrls } = config;
-        if (excludeUrls["*"] || excludeUrls[ctx.apiUrl]) return true;
+        let { excludeUrls, apiRootUrl } = config;
+        if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
-        ctx.error({
-            code: '402',
-            message: '未登录'
-        });
+        ctx.error(config.errorObj);
         return false;
     }
     return true;
 }
 
 function encodeToken(obj) {
-    let { secret, expire } = config;
+    let { secret, expire, tokenKeys } = config;
     let arr = [];
 
     if (!Array.isArray(obj) && Array.isArray(tokenKeys)) {
@@ -49,17 +49,19 @@ function encodeToken(obj) {
     let str = jwt.sign({ sub, exp }, secret, { algorithm: 'HS512' });
     return str;
 }
+
 function decodeToken(str) {
     if (!str) throw ({ code: 10, message: "empty token" });
     let { secret, tokenKeys } = config;
 
     let json = jwt.verify(str, secret, { algorithms: ['HS512'] });
     let obj = JSON.parse(json.sub)
-    Array.isArray(obj) && Array.isArray(tokenKeys) && tokenKeys.forEach((k, i) => obj[k] = obj[i])
-    return obj;
+    let token = obj
+    if (Array.isArray(obj) && Array.isArray(tokenKeys)) {
+        token = {}
+        tokenKeys.forEach((k, i) => token[k] = obj[i])
+    }
+    return token;
 }
 
-module.exports = {
-    init,
-    interceptor,
-}
+module.exports = api
