@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-var config
+let config
 
 const api = {
     _init: (current) => {
         config = current
-        var array = config.server.interceptors || [];
+        let array = config.server.interceptors || [];
         if (array.filter(a => a == interceptor) == 0) {
             array.push(interceptor)
         }
@@ -20,12 +20,12 @@ function interceptor(ctx) {
     };
     ctx.token = {};
 
-    var clientToken = ctx.request.headers.token || ctx.request.url.query.token;
+    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
 
     try {
         ctx.token = decodeToken(clientToken);
     } catch (error) {
-        var { excludeUrls, apiRootUrl } = config;
+        let { excludeUrls, apiRootUrl } = config;
         if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
         ctx.error(config.errorObj);
