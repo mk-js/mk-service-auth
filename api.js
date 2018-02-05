@@ -4,14 +4,46 @@ let config
 const api = {
     _init: (current) => {
         config = current
+        config.apiRootUrl = current.server.apiRootUrl
+
         let array = config.server.interceptors || [];
         if (array.filter(a => a == interceptor) == 0) {
             array.push(interceptor)
         }
         config.server.interceptors = array
+
+        config.server.auth = Object.assign(config.server.auth || {}, {
+            custom: scheme,
+            // default: 'custom',
+        })
     }
 }
 
+const scheme = (server, options) => ({
+    api: {
+        settings: config
+    },
+    authenticate: (request, reply) => {
+        let ctx = { request, apiUrl: request.path }
+        if (ctx.apiUrl.indexOf(config.apiRootUrl) != 0
+        || ctx.request.headers['content-type']=='application/x-www-form-urlencoded'
+        ){
+            return reply.continue({ credentials: {} });
+        }
+
+        let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
+        try {
+            ctx.token = decodeToken(clientToken);
+        } catch (error) {
+            let { excludeUrls, apiRootUrl } = config;
+            if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return reply.continue({ credentials: {} });
+
+            reply(config.errorObj)
+            return false;
+        }
+        return reply.continue({ credentials: ctx.token });
+    }
+})
 
 function interceptor(ctx) {
     //向上下文中增加setToken方法和token对象。
@@ -19,20 +51,26 @@ function interceptor(ctx) {
         ctx.resBody.token = encodeToken(obj);
         return ctx;
     };
-    ctx.token = {};
+    ctx.token = ctx.request.auth.credentials;
+    
+    
+    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token; 
 
-    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
-
-    try {
-        ctx.token = decodeToken(clientToken);
-    } catch (error) {
+    try { 
+        ctx.token = decodeToken(clientToken);  
+    } catch (error) { 
         let { excludeUrls, apiRootUrl } = config;
         if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
         ctx.error(config.errorObj);
         return false;
+    } 
+
+    if (!ctx.token) {
+        ctx.error(config.errorObj);
+        return false
     }
-    return true;
+    return true
 }
 
 function encodeToken(obj) {
