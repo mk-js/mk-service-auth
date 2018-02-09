@@ -31,7 +31,9 @@ function config(options) {
         current.secret = new Buffer(options.key, "base64");
     }
     current.excludeUrls = {};
-    current.exclude.forEach(i => current.excludeUrls[current.apiRootUrl + i] = true)
+    if(current.exclude && current.exclude.forEach){
+        current.exclude.forEach(i => current.excludeUrls[current.apiRootUrl + i] = true) 
+    }
 
     api._init(current)
 }

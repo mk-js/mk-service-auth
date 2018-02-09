@@ -12,10 +12,13 @@ const api = {
         }
         config.server.interceptors = array
 
-        config.server.auth = Object.assign(config.server.auth || {}, {
-            custom: scheme,
-            // default: 'custom',
-        })
+        let serverAuth = {
+            custom: scheme
+        }
+        if (config.default) {
+            serverAuth.default = config.default
+        }
+        config.server.auth = Object.assign(config.server.auth || {}, serverAuth)
     }
 }
 
@@ -26,8 +29,8 @@ const scheme = (server, options) => ({
     authenticate: (request, reply) => {
         let ctx = { request, apiUrl: request.path }
         if (ctx.apiUrl.indexOf(config.apiRootUrl) != 0
-        || ctx.request.headers['content-type']=='application/x-www-form-urlencoded'
-        ){
+            || ctx.request.headers['content-type'] == 'application/x-www-form-urlencoded'
+        ) {
             return reply.continue({ credentials: {} });
         }
 
@@ -36,7 +39,7 @@ const scheme = (server, options) => ({
             ctx.token = decodeToken(clientToken);
         } catch (error) {
             let { excludeUrls, apiRootUrl } = config;
-            if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return reply.continue({ credentials: {} });
+            if (excludeUrls["/*"] || excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return reply.continue({ credentials: {} });
 
             reply(config.errorObj)
             return false;
@@ -52,19 +55,19 @@ function interceptor(ctx) {
         return ctx;
     };
     ctx.token = ctx.request.auth.credentials;
-    
-    
-    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token; 
 
-    try { 
-        ctx.token = decodeToken(clientToken);  
-    } catch (error) { 
-        let { excludeUrls, apiRootUrl } = config;
-        if (excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
+
+    let clientToken = ctx.request.headers.token || ctx.request.payload && ctx.request.payload.token || ctx.request.url.query.token;
+
+    try {
+        ctx.token = decodeToken(clientToken);
+    } catch (error) {
+        let { excludeUrls, apiRootUrl } = config; 
+        if (excludeUrls["/*"] || excludeUrls[apiRootUrl + "/*"] || excludeUrls[ctx.apiUrl]) return true;
 
         ctx.error(config.errorObj);
         return false;
-    } 
+    }
 
     if (!ctx.token) {
         ctx.error(config.errorObj);
