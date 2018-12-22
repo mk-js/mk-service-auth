@@ -31,7 +31,9 @@ function config(options) {
         current.secret = new Buffer(options.key, "base64");
     }
     current.excludeUrls = {};
-    current.exclude.forEach(i => current.excludeUrls[current.apiRootUrl + i] = true)
+    if(current.exclude && current.exclude.forEach){
+        current.exclude.forEach(i => current.excludeUrls[current.apiRootUrl + i] = true) 
+    }
 
     api._init(current)
 }
@@ -42,7 +44,8 @@ config.current = {
         message: '未登录'
     },
     key: "token/key",
-    tokenKeys: null,
+    tokenKeys: ["userId"],
+    claim: {},
     exclude: [],
     secret: null,
     expire: 5 * 24 * 60 * 60, //5 days, seconds
