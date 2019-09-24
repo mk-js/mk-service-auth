@@ -87,6 +87,7 @@ function interceptor(ctx) {
 }
 
 function encodeToken(obj) {
+    if(obj === undefined)return;
     let { secret, expire, tokenKeys, claim } = config;
     let arr = [];
 
